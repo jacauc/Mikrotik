@@ -103,7 +103,7 @@
 # If we have output, save new date/time, and send email
 if ([:len $output] > 0) do={
   /system scheduler set [find name="$scheduleName"] comment=$currentTime
-      :local TelegramMessage1 "*$SystemName alert - $OSversion* %0A$output"
+      :local TelegramMessage "*$SystemName alert - $OSversion* %0A$output"
       /tool fetch url=($TelegramURL . $TelegramMessage) keep-result=no
 #  /log info "[LOGMON] New logs found"
 }
