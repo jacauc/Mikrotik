@@ -1,0 +1,26 @@
+#perform auto update of Mikrotik OS and send Telegram Notification
+
+:global TelegramToken
+:global TelegramGroupID
+:global TelegramURL 
+
+/system package update
+check-for-updates 
+
+:global InstalledVersion
+:global LatestVersion
+
+:global OSversion
+:set OSversion [/system resource get version]
+:global SystemName
+:set SystemName [/system identity get name]
+
+:set InstalledVersion [get installed-version]
+:set LatestVersion [get latest-version]
+:delay 1s;
+
+:if ($InstalledVersion != $LatestVersion) do={
+      :local TelegramMessage "*$SystemName alert $OSversion* %0ASystem will be upgraded from $InstalledVersion to $LatestVersion.%0A*Installing and Rebooting Now!*"
+      /tool fetch url=($TelegramURL . $TelegramMessage) keep-result=no
+    install 
+}

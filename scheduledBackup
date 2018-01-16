@@ -1,0 +1,39 @@
+#perform scheduled backup of Mikrotik Config and save to Google Drive (with the help of IFTTT)
+
+:log info "backup beginning now"
+
+:global TelegramToken
+:global TelegramGroupID
+:global TelegramURL 
+
+:global OSversion
+:global OSversionShort
+:set OSversion [/system resource get version]
+:set OSversionShort [:pick $OSversion 0 [:find $OSversion " " -1]] 
+
+:global SystemName
+:set SystemName [/system identity get name]
+
+[:pick [/system clock get time] 0 2]     
+[:pick [/system clock get time] 3 5]
+
+:global backupfile ([/system identity get name] . "-" . \
+[:pick [/system clock get date] 7 11] . [:pick [/system clock get date] 0 3] . [:pick [/system clock get date] 4 6] . "-" . [:pick [/system clock get time] 0 2] . [:pick [/system clock get time] 3 5] . "-rOS" . $OSversionShort)
+
+
+/system backup save name="$backupfile"
+/export file=$backupfile
+:log info "backup pausing for 10s"
+:delay 10s
+:log info "backup being emailed"
+
+/tool e-mail send to=trigger@applet.ifttt.com subject="#mikrotik $backupfile.backup" file="$backupfile.backup" start-tls=yes from=test@example.com
+
+:delay 10s
+
+/tool e-mail send to=trigger@applet.ifttt.com subject="#mikrotik $backupfile.rsc" file="$backupfile.rsc" start-tls=yes from=test@example.com
+
+      :local TelegramMessage "*$SystemName alert - rOS$OSversion*%0ABackup to Drive Completed"
+      /tool fetch url=($TelegramURL . $TelegramMessage) keep-result=no
+
+:log info "backup finished"

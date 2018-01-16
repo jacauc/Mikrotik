@@ -1,0 +1,63 @@
+#script to check specific interface statistics every few minutes and send a telegram message if the bytes sent or bytes received exceed the threshold in Kilobytes
+
+:global TelegramToken
+:global TelegramGroupID
+:global TelegramURL 
+
+:global KiloBytethreshold "10000"
+
+:global CheckTrafficInterface "WAN"
+
+:global OSversion
+:global OSversionShort
+:set OSversion [/system resource get version]
+:set OSversionShort [:pick $OSversion 0 [:find $OSversion " " -1]] 
+
+:global SystemName
+:set SystemName [/system identity get name]
+
+:global TimeFresh [:put [/system clock get time]]
+:global TimeStale
+
+:global replaceChar do={
+  :for i from=0 to=([:len $1] - 1) do={
+    :local char [:pick $1 $i]
+    :if ($char = $2) do={
+      :set $char $3
+    }
+    :set $output ($output . $char)
+  }
+  :return $output
+}
+
+:global txFreshKB
+:global rxFreshKB
+
+:global txStaleKB
+:global rxStaleKB
+
+:global txDiffKB
+:global rxDiffKB
+
+:set txFreshKB [ /interface ethernet get $CheckTrafficInterface driver-tx-byte]
+:set txFreshKB [ $replaceChar $txFreshKB " " "" ]
+:set txFreshKB [ $replaceChar $txFreshKB " " "" ]
+:set txFreshKB [:put ($txFreshKB/1024)]
+
+:set rxFreshKB [/interface ethernet get $CheckTrafficInterface driver-rx-byte]
+:set rxFreshKB [ $replaceChar $rxFreshKB " " "" ]
+:set rxFreshKB [ $replaceChar $rxFreshKB " " "" ]
+:set rxFreshKB [:put ($rxFreshKB/1024)]
+
+:set txDiffKB [:put ($txFreshKB-$txStaleKB)]
+:set rxDiffKB [:put ($rxFreshKB-$rxStaleKB)]
+
+:set txStaleKB $txFreshKB
+:set rxStaleKB $rxFreshKB
+
+:if (($txDiffKB > $KiloBytethreshold ) or ($rxDiffKB > $KiloBytethreshold)) do={
+     :local TelegramMessage "*$SystemName alert - rOS$OSversion*%0A$txDiffKB KB Transmitted%0A$rxDiffKB KB Received%0Abetween $TimeStale and $TimeFresh"
+      /tool fetch url=($TelegramURL . $TelegramMessage) keep-result=no
+}
+
+:set TimeStale [:put [/system clock get time]]

@@ -1,0 +1,6 @@
+#set global variables for use by other scripts - Schedule this to run frequently - once a minute or so.
+# update token and IDs with your own.
+
+:global TelegramToken "123456789:ABC-DEFghIJkLMNOPqrstUvWxYZ"
+:global TelegramGroupID "-098765432"
+:global TelegramURL "https://api.telegram.org/bot$TelegramToken/sendMessage?chat_id=$TelegramGroupID&parse_mode=Markdown&text="

@@ -1,0 +1,60 @@
+# update Dynamic DNS on dreamhost domain and send telegram message with latest IP
+
+:global DynHOSTNAME "host.domain.com"
+:global DynPASSWORD "mypassword"
+:global DynINTERFACE  "ADSL" #This is the external WAN interface we poll for it's IP.
+:global DynURL "http://www.domain.com/DynDNS.php"
+
+:global DynIPSTALE
+:global DynIPFRESH
+:local SAFETOPROCEED 
+
+:global TelegramToken
+:global TelegramGroupID
+:global TelegramURL 
+
+:global OSversion
+:global OSversionShort
+:set OSversion [/system resource get version]
+:set OSversionShort [:pick $OSversion 0 [:find $OSversion " " -1]] 
+
+:global SystemName
+:set SystemName [/system identity get name]
+
+### CHECK IF INTERFACE IS DISABLED ###
+:global DynSTATUS
+/interface pppoe-client monitor $DynINTERFACE once file=DynINTERFACE.txt
+:set DynSTATUS [/file get [/file find name=DynINTERFACE.txt] contents]
+:file remove [/file find name=DynINTERFACE.txt]
+
+:set DynSTATUS [:pick $DynSTATUS ( [:len $DynSTATUS] - 20) ( [:len $DynSTATUS] - 1) ]
+
+
+
+:do { 
+   :set DynIPFRESH [ /ip address get [/ip address find interface=$DynINTERFACE  ] address ]; :set $SAFETOPROCEED 1; 
+   } on-error={ 
+      :log warning ("DynDynDNS: No ip address on $DynINTERFACE, terminating script prematurely.") 
+   }
+
+if ($SAFETOPROCEED = 1) do={
+   :for i from=( [:len $DynIPFRESH] - 1) to=0 do={ :if ( [:pick $DynIPFRESH $i] = "/") do= { :set DynIPFRESH [:pick $DynIPFRESH 0 $i]; } } 
+
+   :if ($DynIPSTALE != $DynIPFRESH) do={
+      :log info ("DynDynDNS: Stale IP = $DynIPSTALE")
+      :log info ("DynDynDNS: Fresh IP = $DynIPFRESH")
+      :log info ("DynDynDNS: Update IP needed, Sending UPDATE...!")
+
+      /tool fetch url="$DynURL\?host=$DynHOSTNAME&passwd=$DynPASSWORD&ip=$DynIPFRESH" mode=http dst-path=("/DynDynDNS.".$DynHOSTNAME)
+       :delay 1
+       :local str [/file find name="DynDynDNS.$DynHOSTNAME"];
+       :file remove $str
+      :set DynIPSTALE $DynIPFRESH
+      :log warning "DynDynDNS: IP updated to $DynIPFRESH!"
+	  :local TelegramMessage "*$SystemName alert - rOS$OSversion*%0A$1HOSTNAME DNS IP Updated to *$1IPFRESH*"
+      /tool fetch url=($TelegramURL . $TelegramMessage) keep-result=no
+   } else={
+     :log info "DynDynDNS: no changes required. Exiting Normally";
+     }
+   }
+}
