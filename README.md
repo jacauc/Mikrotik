@@ -17,15 +17,15 @@ Simplified instructions:
 0. Use telegram
 1. Chat with @botfather
 2. Type /newbot
-3. Give your bot a name... e.g. mywinloginaudit
-4. Give your bot a username... e.g. mywinloginauditbot
+3. Give your bot a name... e.g. myMikrotik
+4. Give your bot a username... e.g. MyMikrotikBot
 5. You will get a message like this:
 
 ![2018-01-06_15-53-12](https://user-images.githubusercontent.com/18201320/34640372-fd5d8314-f2f9-11e7-9b86-c9a30ee889b2.png)
 
 6. RECORD THE TOKEN SHOWN IN THE MESSAGE
 7. Start a chat with your bot and type /start
-8. Exit aforementioned chat and create a Telegram Group conversation. Call it something like "System Notifications"
+8. Exit aforementioned chat and create a Telegram Group conversation. Call it something like "Mikrotik Notifications"
 9. Invite your bot to the group.
 10. Access the following page (insert your bot's TOKEN and remove the <<< and >>> characters): 
 ```
