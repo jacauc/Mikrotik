@@ -1,3 +1,6 @@
+# this is the PHP file hosted on the web root of Dreamhost server to facilitate Dynamic DNS
+# more information here: https://help.dreamhost.com/hc/en-us/articles/217240068-Dynamic-DNS
+
 <?php
 # vi: ts=4 noexpandtab
 
