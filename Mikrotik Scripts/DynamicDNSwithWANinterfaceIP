@@ -51,7 +51,7 @@ if ($SAFETOPROCEED = 1) do={
        :file remove $str
       :set DynIPSTALE $DynIPFRESH
       :log warning "DynDynDNS: IP updated to $DynIPFRESH!"
-	  :local TelegramMessage "*$SystemName alert - rOS$OSversion*%0A$1HOSTNAME DNS IP Updated to *$DynIPFRESH*"
+	  :local TelegramMessage "*$SystemName alert - rOS$OSversion*%0A$DynHOSTNAME DNS IP Updated to *$DynIPFRESH*"
       /tool fetch url=($TelegramURL . $TelegramMessage) keep-result=no
    } else={
      :log info "DynDynDNS: no changes required. Exiting Normally";
