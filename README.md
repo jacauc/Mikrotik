@@ -4,7 +4,7 @@ a Collection of handy Mikrotik Scripts
 Many of these scripts rely on Telegram to send notifications to your telegram bot with variables set in the setGlobals script. More details below on how to activate your bot.
 
 
-[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://jacauc.github.io/donate-bitcoin/)
+[![Donate Bitcoin](https://user-images.githubusercontent.com/18201320/42027759-bdec89d8-7aca-11e8-91b4-f36648eb0ae7.png)](https://jacauc.github.io/donate-bitcoin/)
 
 
 
@@ -44,4 +44,4 @@ https://api.telegram.org/bot<<<TOKEN>>>/getUpdates
 
 
 
-[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://jacauc.github.io/donate-bitcoin/)
+[![Donate Bitcoin](https://user-images.githubusercontent.com/18201320/42027759-bdec89d8-7aca-11e8-91b4-f36648eb0ae7.png)](https://jacauc.github.io/donate-bitcoin/)
