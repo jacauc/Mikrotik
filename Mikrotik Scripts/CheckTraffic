@@ -4,9 +4,9 @@
 :global TelegramGroupID
 :global TelegramURL 
 
-:global KiloBytethreshold "10000"
+:global MegaBytethreshold "3000"
 
-:global CheckTrafficInterface "WAN"
+:global CheckTrafficInterface "ether10-WAN"
 
 :global OSversion
 :global OSversionShort
@@ -30,33 +30,35 @@
   :return $output
 }
 
-:global txFreshKB
-:global rxFreshKB
+:global txFreshMB
+:global rxFreshMB
 
-:global txStaleKB
-:global rxStaleKB
+:global txStaleMB
+:global rxStaleMB
 
-:global txDiffKB
-:global rxDiffKB
+:global txDiffMB
+:global rxDiffMB
 
-:set txFreshKB [ /interface ethernet get $CheckTrafficInterface driver-tx-byte]
-:set txFreshKB [ $replaceChar $txFreshKB " " "" ]
-:set txFreshKB [ $replaceChar $txFreshKB " " "" ]
-:set txFreshKB [:put ($txFreshKB/1024)]
+:set txFreshMB [ /interface ethernet get $CheckTrafficInterface driver-tx-byte]
+:set txFreshMB [ $replaceChar $txFreshMB " " "" ]
+:set txFreshMB [ $replaceChar $txFreshMB " " "" ]
+:set txFreshMB [:put (($txFreshMB/1024)/1024)]
 
-:set rxFreshKB [/interface ethernet get $CheckTrafficInterface driver-rx-byte]
-:set rxFreshKB [ $replaceChar $rxFreshKB " " "" ]
-:set rxFreshKB [ $replaceChar $rxFreshKB " " "" ]
-:set rxFreshKB [:put ($rxFreshKB/1024)]
+:set rxFreshMB [/interface ethernet get $CheckTrafficInterface driver-rx-byte]
+:set rxFreshMB [ $replaceChar $rxFreshMB " " "" ]
+:set rxFreshMB [ $replaceChar $rxFreshMB " " "" ]
+:set rxFreshMB [:put (($rxFreshMB/1024)/1024)]
 
-:set txDiffKB [:put ($txFreshKB-$txStaleKB)]
-:set rxDiffKB [:put ($rxFreshKB-$rxStaleKB)]
+:set txDiffMB [:put ($txFreshMB-$txStaleMB)]
+:set rxDiffMB [:put ($rxFreshMB-$rxStaleMB)]
 
-:set txStaleKB $txFreshKB
-:set rxStaleKB $rxFreshKB
+:set txStaleMB $txFreshMB
+:set rxStaleMB $rxFreshMB
 
-:if (($txDiffKB > $KiloBytethreshold ) or ($rxDiffKB > $KiloBytethreshold)) do={
-     :local TelegramMessage "*$SystemName alert - rOS$OSversion*%0A$txDiffKB KB Transmitted%0A$rxDiffKB KB Received%0Abetween $TimeStale and $TimeFresh"
+
+:if (($txDiffMB > $MegaBytethreshold ) or ($rxDiffMB > $MegaBytethreshold)) do={
+
+     :local TelegramMessage "*$SystemName alert - rOS$OSversion*%0A$txDiffMB MB Transmitted%0A$rxDiffMB MB Received%0Abetween $TimeStale and $TimeFresh"
       /tool fetch url=($TelegramURL . $TelegramMessage) keep-result=no
 }
 
