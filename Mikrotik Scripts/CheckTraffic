@@ -11,7 +11,7 @@
 :global OSversion
 :global OSversionShort
 :set OSversion [/system resource get version]
-:set OSversionShort [:pick $OSversion 0 [:find $OSversion " " -1]] 
+:set OSversionShort [:pick $OSversion 0 [:find $OSversion " " -1]]  
 
 :global SystemName
 :set SystemName [/system identity get name]
